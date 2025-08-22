@@ -4,6 +4,7 @@ import com.alphanet.products.leonardobackend.dto.ApprenticeCountDto;
 import com.alphanet.products.leonardobackend.dto.CenterMetricDto;
 import com.alphanet.products.leonardobackend.dto.DepartmentMetricDto;
 import com.alphanet.products.leonardobackend.dto.EnglishLevelDto;
+import com.alphanet.products.leonardobackend.dto.ErrorResponse;
 import com.alphanet.products.leonardobackend.dto.GitHubUserDto;
 import com.alphanet.products.leonardobackend.dto.ProgramMetricDto;
 import com.alphanet.products.leonardobackend.dto.RecommendedInstructorDto;
@@ -61,7 +62,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<ScalarMetricDto>> getScalarData() {
         return ResponseEntity.ok(metricsService.getScalarMetrics());
@@ -96,7 +120,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<CenterMetricDto>> getMetricsByCenter() {
         return ResponseEntity.ok(metricsService.getCenterMetrics());
@@ -128,7 +175,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<ProgramMetricDto>> getMetricsByProgram() {
         return ResponseEntity.ok(metricsService.getProgramMetrics());
@@ -159,7 +229,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<DepartmentMetricDto>> getMetricsByDepartment() {
         return ResponseEntity.ok(metricsService.getDepartmentMetrics());
@@ -192,7 +285,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<GitHubUserDto>> getGitHubUsersMetrics() {
         return ResponseEntity.ok(metricsService.getGitHubUsersMetrics());
@@ -225,7 +341,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<EnglishLevelDto>> getEnglishLevelMetrics() {
         return ResponseEntity.ok(metricsService.getEnglishLevelMetrics());
@@ -257,7 +396,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<ApprenticeCountDto>> getApprenticeCountMetrics() {
         return ResponseEntity.ok(metricsService.getApprenticeCountMetrics());
@@ -293,7 +455,30 @@ public class MetricsApi {
                             )
                     )
             ),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Bad request - Invalid parameters",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Not found - Data not available",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
     })
     public ResponseEntity<List<RecommendedInstructorDto>> getRecommendedInstructorMetrics() {
         return ResponseEntity.ok(metricsService.getRecommendedInstructorMetrics());

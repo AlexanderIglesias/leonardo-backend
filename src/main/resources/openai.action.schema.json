@@ -5,6 +5,68 @@
     "version": "1.0.0",
     "description": "API for SENASoft competition metrics and statistics"
   },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 500
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Internal server error occurred"
+          },
+          "details": {
+            "type": "string",
+            "description": "Error details",
+            "example": "Database connection failed"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when error occurred",
+            "example": "2025-08-22T11:14:02"
+          },
+          "path": {
+            "type": "string",
+            "description": "Request path that caused the error",
+            "example": "/api/v1/metrics/scalar"
+          },
+          "validationErrors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "description": "List of validation errors (if any)"
+          }
+        },
+        "required": ["status", "message", "details", "timestamp", "path"]
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field name with error",
+            "example": "email"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message for the field",
+            "example": "Email is required"
+          },
+          "rejectedValue": {
+            "description": "Rejected value"
+          }
+        },
+        "required": ["field", "message"]
+      }
+    }
+  },
   "servers": [
     {
       "url": "https://3.134.102.125.nip.io/api/v1",
@@ -79,18 +141,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -158,18 +234,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -219,18 +309,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -276,18 +380,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -341,18 +459,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -406,18 +538,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -467,18 +613,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -538,18 +698,32 @@
               }
             }
           },
-          "default": {
-            "description": "Error inesperado",
+          "400": {
+            "description": "Bad request - Invalid parameters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
-              },
-              "text/plain": {
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - Data not available",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
