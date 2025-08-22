@@ -1,12 +1,20 @@
 package com.alphanet.products.leonardobackend.service.mapper;
 
+import com.alphanet.products.leonardobackend.dto.ApprenticeCountDto;
 import com.alphanet.products.leonardobackend.dto.CenterMetricDto;
 import com.alphanet.products.leonardobackend.dto.DepartmentMetricDto;
+import com.alphanet.products.leonardobackend.dto.EnglishLevelDto;
+import com.alphanet.products.leonardobackend.dto.GitHubUserDto;
 import com.alphanet.products.leonardobackend.dto.ProgramMetricDto;
+import com.alphanet.products.leonardobackend.dto.RecommendedInstructorDto;
 import com.alphanet.products.leonardobackend.dto.ScalarMetricDto;
+import com.alphanet.products.leonardobackend.dto.projection.ApprenticeCountProjection;
 import com.alphanet.products.leonardobackend.dto.projection.CenterMetricProjection;
 import com.alphanet.products.leonardobackend.dto.projection.DepartmentMetricProjection;
+import com.alphanet.products.leonardobackend.dto.projection.EnglishLevelProjection;
+import com.alphanet.products.leonardobackend.dto.projection.GitHubUserProjection;
 import com.alphanet.products.leonardobackend.dto.projection.ProgramMetricProjection;
+import com.alphanet.products.leonardobackend.dto.projection.RecommendedInstructorProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -410,8 +418,255 @@ class MetricsMapperTest {
 
         // Then
         assertThat(result.getCenterName()).isNull();
-        assertThat(result.getDepartment()).isNull();
-        assertThat(result.getTotalApprentices()).isNull();
         assertThat(result.getInstructorsRecommended()).isNull();
+    }
+
+    // ===== NEW ENDPOINTS MAPPER TESTS =====
+
+    @Test
+    @DisplayName("Should map GitHub user projection to DTO")
+    void shouldMapGitHubUserProjectionToDto() {
+        // Given
+        GitHubUserProjection projection = new GitHubUserProjection() {
+            @Override
+            public String getCenterName() {
+                return "SENA - Centro Test";
+            }
+
+            @Override
+            public String getDepartment() {
+                return "Test Department";
+            }
+
+            @Override
+            public Integer getGithubUsers() {
+                return 80;
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return 100;
+            }
+        };
+
+        // When
+        GitHubUserDto result = metricsMapper.toGitHubUserDto(projection, "80.0%");
+
+        // Then
+        assertThat(result.getCenterName()).isEqualTo("SENA - Centro Test");
+        assertThat(result.getDepartment()).isEqualTo("Test Department");
+        assertThat(result.getGithubUsers()).isEqualTo(80);
+        assertThat(result.getGithubPercentage()).isEqualTo("80.0%");
+    }
+
+    @Test
+    @DisplayName("Should map English level projection to DTO")
+    void shouldMapEnglishLevelProjectionToDto() {
+        // Given
+        EnglishLevelProjection projection = new EnglishLevelProjection() {
+            @Override
+            public String getCenterName() {
+                return "SENA - Centro Test";
+            }
+
+            @Override
+            public String getDepartment() {
+                return "Test Department";
+            }
+
+            @Override
+            public Integer getEnglishB1B2() {
+                return 60;
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return 100;
+            }
+        };
+
+        // When
+        EnglishLevelDto result = metricsMapper.toEnglishLevelDto(projection, "60.0%");
+
+        // Then
+        assertThat(result.getCenterName()).isEqualTo("SENA - Centro Test");
+        assertThat(result.getDepartment()).isEqualTo("Test Department");
+        assertThat(result.getEnglishB1B2()).isEqualTo(60);
+        assertThat(result.getEnglishPercentage()).isEqualTo("60.0%");
+    }
+
+    @Test
+    @DisplayName("Should map apprentice count projection to DTO")
+    void shouldMapApprenticeCountProjectionToDto() {
+        // Given
+        ApprenticeCountProjection projection = new ApprenticeCountProjection() {
+            @Override
+            public String getCenterName() {
+                return "SENA - Centro Test";
+            }
+
+            @Override
+            public String getDepartment() {
+                return "Test Department";
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return 150;
+            }
+        };
+
+        // When
+        ApprenticeCountDto result = metricsMapper.toApprenticeCountDto(projection);
+
+        // Then
+        assertThat(result.getCenterName()).isEqualTo("SENA - Centro Test");
+        assertThat(result.getDepartment()).isEqualTo("Test Department");
+        assertThat(result.getTotalApprentices()).isEqualTo(150);
+    }
+
+    @Test
+    @DisplayName("Should map recommended instructor projection to DTO")
+    void shouldMapRecommendedInstructorProjectionToDto() {
+        // Given
+        RecommendedInstructorProjection projection = new RecommendedInstructorProjection() {
+            @Override
+            public String getCenterName() {
+                return "SENA - Centro Test";
+            }
+
+            @Override
+            public String getDepartment() {
+                return "Test Department";
+            }
+
+            @Override
+            public Long getCenterId() {
+                return 1L;
+            }
+        };
+        List<String> instructors = Arrays.asList("Instructor 1", "Instructor 2", "Instructor 3");
+
+        // When
+        RecommendedInstructorDto result = metricsMapper.toRecommendedInstructorDto(projection, instructors);
+
+        // Then
+        assertThat(result.getCenterName()).isEqualTo("SENA - Centro Test");
+        assertThat(result.getDepartment()).isEqualTo("Test Department");
+        assertThat(result.getInstructorsRecommended()).hasSize(3);
+        assertThat(result.getInstructorsCount()).isEqualTo(3);
+        assertThat(result.getInstructorsRecommended()).contains("Instructor 1", "Instructor 2", "Instructor 3");
+    }
+
+    @Test
+    @DisplayName("Should handle empty instructors list in recommended instructor mapping")
+    void shouldHandleEmptyInstructorsListInRecommendedInstructorMapping() {
+        // Given
+        RecommendedInstructorProjection projection = new RecommendedInstructorProjection() {
+            @Override
+            public String getCenterName() {
+                return "SENA - Centro Test";
+            }
+
+            @Override
+            public String getDepartment() {
+                return "Test Department";
+            }
+
+            @Override
+            public Long getCenterId() {
+                return 1L;
+            }
+        };
+        List<String> instructors = Collections.emptyList();
+
+        // When
+        RecommendedInstructorDto result = metricsMapper.toRecommendedInstructorDto(projection, instructors);
+
+        // Then
+        assertThat(result.getInstructorsRecommended()).isEmpty();
+        assertThat(result.getInstructorsCount()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("Should handle null values in new endpoint mappings")
+    void shouldHandleNullValuesInNewEndpointMappings() {
+        // Given
+        GitHubUserProjection githubProjection = new GitHubUserProjection() {
+            @Override
+            public String getCenterName() {
+                return null;
+            }
+
+            @Override
+            public String getDepartment() {
+                return null;
+            }
+
+            @Override
+            public Integer getGithubUsers() {
+                return null;
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return null;
+            }
+        };
+
+        EnglishLevelProjection englishProjection = new EnglishLevelProjection() {
+            @Override
+            public String getCenterName() {
+                return null;
+            }
+
+            @Override
+            public String getDepartment() {
+                return null;
+            }
+
+            @Override
+            public Integer getEnglishB1B2() {
+                return null;
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return null;
+            }
+        };
+
+        ApprenticeCountProjection apprenticeProjection = new ApprenticeCountProjection() {
+            @Override
+            public String getCenterName() {
+                return null;
+            }
+
+            @Override
+            public String getDepartment() {
+                return null;
+            }
+
+            @Override
+            public Integer getTotalApprentices() {
+                return null;
+            }
+        };
+
+        // When
+        GitHubUserDto githubResult = metricsMapper.toGitHubUserDto(githubProjection, "0%");
+        EnglishLevelDto englishResult = metricsMapper.toEnglishLevelDto(englishProjection, "0%");
+        ApprenticeCountDto apprenticeResult = metricsMapper.toApprenticeCountDto(apprenticeProjection);
+
+        // Then
+        assertThat(githubResult.getCenterName()).isNull();
+        assertThat(githubResult.getDepartment()).isNull();
+        assertThat(githubResult.getGithubUsers()).isNull();
+        assertThat(englishResult.getCenterName()).isNull();
+        assertThat(englishResult.getDepartment()).isNull();
+        assertThat(englishResult.getEnglishB1B2()).isNull();
+        assertThat(apprenticeResult.getCenterName()).isNull();
+        assertThat(apprenticeResult.getDepartment()).isNull();
+        assertThat(apprenticeResult.getTotalApprentices()).isNull();
     }
 }

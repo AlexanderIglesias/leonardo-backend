@@ -1,12 +1,20 @@
 package com.alphanet.products.leonardobackend.service.impl;
 
+import com.alphanet.products.leonardobackend.dto.ApprenticeCountDto;
 import com.alphanet.products.leonardobackend.dto.CenterMetricDto;
 import com.alphanet.products.leonardobackend.dto.DepartmentMetricDto;
+import com.alphanet.products.leonardobackend.dto.EnglishLevelDto;
+import com.alphanet.products.leonardobackend.dto.GitHubUserDto;
 import com.alphanet.products.leonardobackend.dto.ProgramMetricDto;
+import com.alphanet.products.leonardobackend.dto.RecommendedInstructorDto;
 import com.alphanet.products.leonardobackend.dto.ScalarMetricDto;
+import com.alphanet.products.leonardobackend.dto.projection.ApprenticeCountProjection;
 import com.alphanet.products.leonardobackend.dto.projection.CenterMetricProjection;
 import com.alphanet.products.leonardobackend.dto.projection.DepartmentMetricProjection;
+import com.alphanet.products.leonardobackend.dto.projection.EnglishLevelProjection;
+import com.alphanet.products.leonardobackend.dto.projection.GitHubUserProjection;
 import com.alphanet.products.leonardobackend.dto.projection.ProgramMetricProjection;
+import com.alphanet.products.leonardobackend.dto.projection.RecommendedInstructorProjection;
 import com.alphanet.products.leonardobackend.repository.DepartmentRepository;
 import com.alphanet.products.leonardobackend.repository.InstructorRepository;
 import com.alphanet.products.leonardobackend.repository.ProgramRepository;
@@ -89,5 +97,92 @@ public class MetricsServiceImpl implements MetricsService {
         return departmentData.stream()
                 .map(metricsMapper::toDepartmentMetricDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GitHubUserDto> getGitHubUsersMetrics() {
+        log.debug("Retrieving GitHub users metrics");
+        List<GitHubUserProjection> githubData = trainingCenterRepository.getGitHubUsersMetrics();
+        return githubData.stream()
+                .map(this::buildGitHubUserDto)
+                .collect(Collectors.toList());
+    }
+
+    private GitHubUserDto buildGitHubUserDto(GitHubUserProjection projection) {
+        int totalApprentices = projection.getTotalApprentices() != null ? projection.getTotalApprentices() : 0;
+        int githubUsers = projection.getGithubUsers() != null ? projection.getGithubUsers() : 0;
+        
+        String percentage = totalApprentices > 0 
+            ? metricsMapper.formatPercentage(metricsMapper.calculatePercentage(githubUsers, totalApprentices))
+            : "0%";
+            
+        return new GitHubUserDto(
+            projection.getCenterName(),
+            projection.getDepartment(),
+            githubUsers,
+            percentage
+        );
+    }
+
+    @Override
+    public List<EnglishLevelDto> getEnglishLevelMetrics() {
+        log.debug("Retrieving English level B1/B2 metrics");
+        List<EnglishLevelProjection> englishData = trainingCenterRepository.getEnglishLevelMetrics();
+        return englishData.stream()
+                .map(this::buildEnglishLevelDto)
+                .collect(Collectors.toList());
+    }
+
+    private EnglishLevelDto buildEnglishLevelDto(EnglishLevelProjection projection) {
+        int totalApprentices = projection.getTotalApprentices() != null ? projection.getTotalApprentices() : 0;
+        int englishB1B2 = projection.getEnglishB1B2() != null ? projection.getEnglishB1B2() : 0;
+        
+        String percentage = totalApprentices > 0 
+            ? metricsMapper.formatPercentage(metricsMapper.calculatePercentage(englishB1B2, totalApprentices))
+            : "0%";
+            
+        return new EnglishLevelDto(
+            projection.getCenterName(),
+            projection.getDepartment(),
+            englishB1B2,
+            percentage
+        );
+    }
+
+    @Override
+    public List<ApprenticeCountDto> getApprenticeCountMetrics() {
+        log.debug("Retrieving apprentice count metrics by center");
+        List<ApprenticeCountProjection> apprenticeData = trainingCenterRepository.getApprenticeCountMetrics();
+        return apprenticeData.stream()
+                .map(this::buildApprenticeCountDto)
+                .collect(Collectors.toList());
+    }
+
+    private ApprenticeCountDto buildApprenticeCountDto(ApprenticeCountProjection projection) {
+        return new ApprenticeCountDto(
+            projection.getCenterName(),
+            projection.getDepartment(),
+            projection.getTotalApprentices()
+        );
+    }
+
+    @Override
+    public List<RecommendedInstructorDto> getRecommendedInstructorMetrics() {
+        log.debug("Retrieving recommended instructor metrics by center");
+        List<RecommendedInstructorProjection> instructorData = trainingCenterRepository.getRecommendedInstructorMetrics();
+        return instructorData.stream()
+                .map(this::buildRecommendedInstructorDto)
+                .collect(Collectors.toList());
+    }
+
+    private RecommendedInstructorDto buildRecommendedInstructorDto(RecommendedInstructorProjection projection) {
+        List<String> recommendedInstructors = instructorRepository
+                .getRecommendedInstructorsByCenter(projection.getCenterId());
+        return new RecommendedInstructorDto(
+            projection.getCenterName(),
+            projection.getDepartment(),
+            recommendedInstructors,
+            recommendedInstructors.size()
+        );
     }
 }

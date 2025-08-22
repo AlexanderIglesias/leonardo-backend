@@ -1,8 +1,12 @@
 package com.alphanet.products.leonardobackend.controller;
 
+import com.alphanet.products.leonardobackend.dto.ApprenticeCountDto;
 import com.alphanet.products.leonardobackend.dto.CenterMetricDto;
 import com.alphanet.products.leonardobackend.dto.DepartmentMetricDto;
+import com.alphanet.products.leonardobackend.dto.EnglishLevelDto;
+import com.alphanet.products.leonardobackend.dto.GitHubUserDto;
 import com.alphanet.products.leonardobackend.dto.ProgramMetricDto;
+import com.alphanet.products.leonardobackend.dto.RecommendedInstructorDto;
 import com.alphanet.products.leonardobackend.dto.ScalarMetricDto;
 import com.alphanet.products.leonardobackend.service.MetricsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -159,5 +163,139 @@ public class MetricsApi {
     })
     public ResponseEntity<List<DepartmentMetricDto>> getMetricsByDepartment() {
         return ResponseEntity.ok(metricsService.getDepartmentMetrics());
+    }
+
+    @GetMapping("/github-users")
+    @Operation(
+            summary = "Get GitHub users metrics by training center",
+            description = "Returns metrics specifically focused on GitHub users per training center, including percentage of total apprentices"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "GitHub users metrics list obtained successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = GitHubUserDto.class),
+                            examples = @ExampleObject(
+                                    name = "GitHub users metrics example",
+                                    value = """
+                                            [
+                                                {
+                                                    "centerName": "SENA - Centro de Biotecnología Industrial",
+                                                    "department": "Cundinamarca",
+                                                    "githubUsers": 32,
+                                                    "githubPercentage": "71.1%"
+                                                }
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<GitHubUserDto>> getGitHubUsersMetrics() {
+        return ResponseEntity.ok(metricsService.getGitHubUsersMetrics());
+    }
+
+    @GetMapping("/english-level")
+    @Operation(
+            summary = "Get English level B1/B2 metrics by training center",
+            description = "Returns metrics specifically focused on apprentices with B1/B2 English level per training center, including percentage of total apprentices"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "English level metrics list obtained successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EnglishLevelDto.class),
+                            examples = @ExampleObject(
+                                    name = "English level metrics example",
+                                    value = """
+                                            [
+                                                {
+                                                    "centerName": "SENA - Centro de Biotecnología Industrial",
+                                                    "department": "Cundinamarca",
+                                                    "englishB1B2": 28,
+                                                    "englishPercentage": "62.2%"
+                                                    }
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<EnglishLevelDto>> getEnglishLevelMetrics() {
+        return ResponseEntity.ok(metricsService.getEnglishLevelMetrics());
+    }
+
+    @GetMapping("/apprentice-count")
+    @Operation(
+            summary = "Get apprentice count by training center",
+            description = "Returns only the count of apprentices per training center, without additional metrics"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Apprentice count metrics list obtained successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApprenticeCountDto.class),
+                            examples = @ExampleObject(
+                                    name = "Apprentice count metrics example",
+                                    value = """
+                                            [
+                                                {
+                                                    "centerName": "SENA - Centro de Biotecnología Industrial",
+                                                    "department": "Cundinamarca",
+                                                    "totalApprentices": 45
+                                                }
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<ApprenticeCountDto>> getApprenticeCountMetrics() {
+        return ResponseEntity.ok(metricsService.getApprenticeCountMetrics());
+    }
+
+    @GetMapping("/recommended-instructors")
+    @Operation(
+            summary = "Get recommended instructors by training center",
+            description = "Returns only the recommended instructors per training center, without additional metrics"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Recommended instructors metrics list obtained successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RecommendedInstructorDto.class),
+                            examples = @ExampleObject(
+                                    name = "Recommended instructors metrics example",
+                                    value = """
+                                            [
+                                                {
+                                                    "centerName": "SENA - Centro de Biotecnología Industrial",
+                                                    "department": "Cundinamarca",
+                                                    "instructorsRecommended": [
+                                                        "María García López",
+                                                        "Carlos Andrés Rodríguez"
+                                                    ],
+                                                    "instructorsCount": 2
+                                                }
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<RecommendedInstructorDto>> getRecommendedInstructorMetrics() {
+        return ResponseEntity.ok(metricsService.getRecommendedInstructorMetrics());
     }
 }

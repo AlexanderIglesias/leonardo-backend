@@ -294,6 +294,268 @@
           }
         }
       }
+    },
+    "/metrics/github-users": {
+      "get": {
+        "operationId": "getGitHubUsersMetrics",
+        "summary": "Obtener métricas de usuarios GitHub por centro de formación",
+        "responses": {
+          "200": {
+            "description": "Lista de métricas de usuarios GitHub por centro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "centerName": {
+                        "type": "string"
+                      },
+                      "department": {
+                        "type": "string"
+                      },
+                      "githubUsers": {
+                        "type": "number"
+                      },
+                      "githubPercentage": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["centerName", "department", "githubUsers", "githubPercentage"]
+                  }
+                },
+                "examples": {
+                  "ok": {
+                    "summary": "Ejemplo de usuarios GitHub",
+                    "value": [
+                      {
+                        "centerName": "SENA - Centro de Biotecnología Industrial",
+                        "department": "Cundinamarca",
+                        "githubUsers": 32,
+                        "githubPercentage": "71.1%"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/english-level": {
+      "get": {
+        "operationId": "getEnglishLevelMetrics",
+        "summary": "Obtener métricas de nivel de inglés B1/B2 por centro de formación",
+        "responses": {
+          "200": {
+            "description": "Lista de métricas de nivel de inglés B1/B2 por centro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "centerName": {
+                        "type": "string"
+                      },
+                      "department": {
+                        "type": "string"
+                      },
+                      "englishB1B2": {
+                        "type": "number"
+                      },
+                      "englishPercentage": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["centerName", "department", "englishB1B2", "englishPercentage"]
+                  }
+                },
+                "examples": {
+                  "ok": {
+                    "summary": "Ejemplo de nivel de inglés",
+                    "value": [
+                      {
+                        "centerName": "SENA - Centro de Biotecnología Industrial",
+                        "department": "Cundinamarca",
+                        "englishB1B2": 28,
+                        "englishPercentage": "62.2%"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/apprentice-count": {
+      "get": {
+        "operationId": "getApprenticeCountMetrics",
+        "summary": "Obtener conteo de aprendices por centro de formación",
+        "responses": {
+          "200": {
+            "description": "Lista de conteo de aprendices por centro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "centerName": {
+                        "type": "string"
+                      },
+                      "department": {
+                        "type": "string"
+                      },
+                      "totalApprentices": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["centerName", "department", "totalApprentices"]
+                  }
+                },
+                "examples": {
+                  "ok": {
+                    "summary": "Ejemplo de conteo de aprendices",
+                    "value": [
+                      {
+                        "centerName": "SENA - Centro de Biotecnología Industrial",
+                        "department": "Cundinamarca",
+                        "totalApprentices": 45
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/recommended-instructors": {
+      "get": {
+        "operationId": "getRecommendedInstructorMetrics",
+        "summary": "Obtener instructores recomendados por centro de formación",
+        "responses": {
+          "200": {
+            "description": "Lista de instructores recomendados por centro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "centerName": {
+                        "type": "string"
+                      },
+                      "department": {
+                        "type": "string"
+                      },
+                      "instructorsRecommended": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "instructorsCount": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["centerName", "department", "instructorsRecommended", "instructorsCount"]
+                  }
+                },
+                "examples": {
+                  "ok": {
+                    "summary": "Ejemplo de instructores recomendados",
+                    "value": [
+                      {
+                        "centerName": "SENA - Centro de Biotecnología Industrial",
+                        "department": "Cundinamarca",
+                        "instructorsRecommended": [
+                          "María García López",
+                          "Carlos Andrés Rodríguez"
+                        ],
+                        "instructorsCount": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
