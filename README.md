@@ -59,7 +59,7 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 
 1. **Clone and navigate to the project**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AlexanderIglesias/leonardo-backend
    cd leonardo-backend
    ```
 
@@ -77,7 +77,7 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 
 1. **Clone and navigate to the project**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AlexanderIglesias/leonardo-backend
    cd leonardo-backend
    ```
 
