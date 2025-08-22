@@ -35,6 +35,8 @@ sudo mkdir -p /opt/leonardo/logs
 sudo mkdir -p /opt/leonardo/config
 sudo chown -R leonardo:leonardo /opt/leonardo
 
+
+
 # Install and configure systemd service
 echo "🔧 Creating systemd service..."
 sudo tee /etc/systemd/system/leonardo-backend.service > /dev/null <<EOF
@@ -56,8 +58,9 @@ StandardError=journal
 SyslogIdentifier=leonardo-backend
 
 Environment=JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+Environment=DB_URL=jdbc:mysql://YOUR_RDS_ENDPOINT.region.rds.amazonaws.com:3306/leonardo_senasoft?useSSL=true&requireSSL=true&serverTimezone=UTC
 Environment=DB_USERNAME=leonardo_user
-Environment=DB_PASSWORD=REPLACE_WITH_ACTUAL_PASSWORD
+Environment=DB_PASSWORD=REPLACE_WITH_SECURE_PASSWORD
 
 [Install]
 WantedBy=multi-user.target

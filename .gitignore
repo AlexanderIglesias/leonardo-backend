@@ -49,8 +49,13 @@ Thumbs.db
 .env
 .env.local
 .env.development.local
-.env.test.local
 .env.production.local
+
+### Security - Never commit these files ###
+*.pem
+*.key
+.aws/
+config/secrets.properties
 
 ### AWS deployment ###
 deployment-package/
