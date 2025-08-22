@@ -1,0 +1,41 @@
+# Build artifacts
+target/
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Maven wrapper (we use Maven in build stage)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
