@@ -8,6 +8,11 @@ target/
 mvnw
 mvnw.cmd
 
+### Build artifacts and deployment packages ###
+deployment-package/
+*.jar
+*.war
+
 ### STS ###
 .apt_generated
 .classpath
