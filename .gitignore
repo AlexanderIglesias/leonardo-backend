@@ -1,8 +1,12 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Maven Wrapper - Should not be in repository ###
+.mvn/
+mvnw
+mvnw.cmd
 
 ### STS ###
 .apt_generated
@@ -61,10 +65,6 @@ config/secrets.properties
 deployment-package/
 *.jar
 *.war
-
-### Maven ###
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.properties
 
 ### Temporary files ###
 *.tmp
