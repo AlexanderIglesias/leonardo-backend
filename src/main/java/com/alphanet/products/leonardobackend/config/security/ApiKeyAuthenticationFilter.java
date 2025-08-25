@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.lang.NonNull;
 
 /**
  * API Key Authentication Filter
@@ -68,9 +69,9 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                  HttpServletResponse response,
-                                  FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                  @NonNull HttpServletResponse response,
+                                  @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String requestApiKey = request.getHeader(API_KEY_HEADER);
         String clientIp = getClientIpAddress(request);
