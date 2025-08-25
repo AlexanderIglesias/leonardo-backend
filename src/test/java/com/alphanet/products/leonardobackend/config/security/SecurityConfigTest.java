@@ -1,33 +1,28 @@
 package com.alphanet.products.leonardobackend.config.security;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for SecurityConfig API key validation
+ * Unit tests for SecurityConfig API key validation
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource(properties = {
-    "api.security.enabled=true",
-    "api.key=test-api-key-that-is-long-enough-to-pass-validation-12345"
-})
 class SecurityConfigTest {
-
-    @Autowired
-    private SecurityConfig securityConfig;
 
     @Test
     void testValidApiKeyConfiguration() {
-        // This test should pass with a valid API key
-        assertNotNull(securityConfig);
+        // Create a new instance for testing
+        SecurityConfig securityConfig = new SecurityConfig();
+        String validApiKey = "valid-api-key-that-is-long-enough-to-pass-validation-12345";
+        
+        // Use reflection to set the private field
+        ReflectionTestUtils.setField(securityConfig, "apiKey", validApiKey);
+        
+        // This should not throw an exception
+        assertDoesNotThrow(() -> {
+            ReflectionTestUtils.invokeMethod(securityConfig, "validateApiKey");
+        });
     }
 }
 
@@ -119,7 +114,7 @@ class SecurityConfigValidationTest {
         // Test various weak patterns that pass length validation
         String[] weakPatterns = {
             "testtesttesttesttesttesttesttesttesttesttesttest", // repeated "test"
-            "demodemodemodemodemodemodemodemodemodemodemodemo", // repeated "demo"
+            "demodemodemodemodemodemodemodemodemodemodemodemodemo", // repeated "demo"
             "defaultdefaultdefaultdefaultdefaultdefaultdefault", // repeated "default"
             "passwordpasswordpasswordpasswordpasswordpassword", // repeated "password"
             "1234567890123456789012345678901234567890123456789012345678901234", // only numbers

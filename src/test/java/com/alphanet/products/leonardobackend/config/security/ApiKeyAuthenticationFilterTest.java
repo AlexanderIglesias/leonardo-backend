@@ -43,25 +43,27 @@ class ApiKeyAuthenticationFilterTest {
 
     @Test
     void testRateLimitingInitialization() {
-        ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter("test-api-key");
+        // Use constructor with hardcoded values for testing
+        ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter("test-api-key", 5, 60000, 300000);
         
         // Verify rate limiting map is initialized
         Object rateLimitMap = ReflectionTestUtils.getField(filter, "rateLimitMap");
         assertNotNull(rateLimitMap);
         
-        // Verify rate limiting constants are set
-        Object maxFailedAttempts = ReflectionTestUtils.getField(filter, "MAX_FAILED_ATTEMPTS_PER_IP");
-        Object rateLimitWindow = ReflectionTestUtils.getField(filter, "RATE_LIMIT_WINDOW_MS");
-        Object logSuppressionWindow = ReflectionTestUtils.getField(filter, "LOG_SUPPRESSION_WINDOW_MS");
+        // Verify rate limiting values are set correctly
+        Integer maxFailedAttempts = (Integer) ReflectionTestUtils.getField(filter, "maxFailedAttemptsPerIp");
+        Long rateLimitWindow = (Long) ReflectionTestUtils.getField(filter, "rateLimitWindowMs");
+        Long logSuppressionWindow = (Long) ReflectionTestUtils.getField(filter, "logSuppressionWindowMs");
         
-        assertNotNull(maxFailedAttempts);
-        assertNotNull(rateLimitWindow);
-        assertNotNull(logSuppressionWindow);
+        assertEquals(5, maxFailedAttempts);
+        assertEquals(60000L, rateLimitWindow);
+        assertEquals(300000L, logSuppressionWindow);
     }
 
     @Test
     void testFilterStructure() {
-        ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter("test-api-key");
+        // Use constructor with hardcoded values for testing
+        ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter("test-api-key", 5, 60000, 300000);
         
         // Verify the filter has the expected structure
         assertNotNull(filter);

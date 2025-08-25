@@ -136,6 +136,8 @@ DB_PASSWORD=your_password_here
 MYSQL_ROOT_PASSWORD=your_root_password
 ```
 
+**Note**: Rate limiting configuration is now handled in `application.properties` and is required for the application to start.
+
 **Option 1: Load manually**
 ```bash
 source .env
@@ -156,9 +158,49 @@ Set environment variables directly on the server:
 ```bash
 export API_KEY=your_production_api_key_minimum_32_characters_long
 export API_SECURITY_ENABLED=true
+
 export DB_USERNAME=leonardo_user
 export DB_PASSWORD=your_production_password
 ```
+
+**Note**: Rate limiting configuration for production should be set in `application.properties` on the server.
+
+### Rate Limiting Configuration
+
+The rate limiting behavior can be customized through configuration properties in different profile files:
+
+#### **Development Configuration** (`application.properties`)
+```properties
+# Rate limiting configuration for local development
+api.security.rate-limit.max-attempts=5         # 5 attempts per window
+api.security.rate-limit.window-ms=60000        # 1 minute window
+api.security.rate-limit.log-suppression-ms=300000  # 5 minute log suppression
+```
+
+#### **Production Configuration** (`application-aws.properties`)
+```properties
+# Rate limiting configuration for AWS production (stricter)
+api.security.rate-limit.max-attempts=3         # 3 attempts per window
+api.security.rate-limit.window-ms=300000       # 5 minute window
+api.security.rate-limit.log-suppression-ms=600000  # 10 minute log suppression
+```
+
+#### **Customization Options**
+You can modify these values in the respective profile files for different environments:
+
+```properties
+# More lenient for development
+api.security.rate-limit.max-attempts=10        # 10 attempts per window
+api.security.rate-limit.window-ms=30000        # 30 second window
+api.security.rate-limit.log-suppression-ms=120000  # 2 minute log suppression
+
+# Stricter for production
+api.security.rate-limit.max-attempts=3         # 3 attempts per window
+api.security.rate-limit.window-ms=300000       # 5 minute window
+api.security.rate-limit.log-suppression-ms=600000  # 10 minute log suppression
+```
+
+**Note**: These properties are required and must be defined in the appropriate profile file. The application will not start without them.
 
 ### API Key Usage
 Include the API key in your requests:
@@ -436,33 +478,63 @@ environment:
 
 ### Configuration
 
-The application supports multiple profiles:
+The application uses a main configuration file with environment-specific profiles:
 
-#### Development Profile (`application.properties`)
+#### Main Configuration (`application.properties`)
 ```properties
-# Local development with Docker database
+# Core application configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/leonardo_senasoft
 spring.datasource.username=leonardo_user
-spring.profiles.active=dev
-```
+spring.datasource.password=${DB_PASSWORD}
 
-#### Docker Profile (`application-docker.properties`)
-```properties
-# Containerized deployment
-# Database URL provided via environment variables
-# Optimized connection pool settings for containers
-spring.profiles.active=docker
-```
-
-#### AWS Profile (`application-aws.properties`)
-```properties
-# AWS production deployment
-# Uses environment variables for all configuration
+# API Security Configuration
 api.security.enabled=${API_SECURITY_ENABLED:true}
 api.key=${API_KEY}
+
+# Rate Limiting Configuration (Required)
+api.security.rate-limit.max-attempts=5
+api.security.rate-limit.window-ms=60000
+api.security.rate-limit.log-suppression-ms=300000
+```
+
+#### AWS Production Profile (`application-aws.properties`)
+```properties
+# AWS Production Profile Configuration
+api.security.enabled=${API_SECURITY_ENABLED:true}
+api.key=${API_KEY}
+
+# Rate Limiting Configuration (Stricter for production)
+api.security.rate-limit.max-attempts=3
+api.security.rate-limit.window-ms=300000
+api.security.rate-limit.log-suppression-ms=600000
+
+# Database Configuration (uses environment variables)
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
+
+# Production-specific settings
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+logging.level.root=WARN
 ```
+
+**Note**: The AWS profile includes production-ready optimizations:
+- **🔄 Connection Pool**: Optimized for t2.micro instances (1GB RAM)
+- **🛡️ Security**: SSL/TLS for database connections, rate limiting
+- **📊 Monitoring**: Health checks for Application Load Balancer
+- **⚡ Performance**: JVM optimizations and batch processing
+- **📝 Logging**: Production-appropriate log levels
+- **🔒 Safety**: DDL validation only, no data initialization
+
+#### Environment-Specific Overrides
+For different environments, you can:
+1. **Use `application.properties`** for local development
+2. **Use `application-aws.properties`** for AWS production deployment
+3. **Override specific values** using environment variables
+4. **Create custom profiles** if needed for complex deployments
+
+#### Docker Deployment
+For containerized deployment, the same `application.properties` is used, but database connection details are provided via environment variables in the container.
 
 ## Monitoring
 
@@ -523,7 +595,7 @@ The backend includes a **comprehensive test suite** with **enhanced security tes
 ```
 
 ### **Test Statistics**
-- **Total Tests**: 70+ ✅ (including new security tests)
+- **Total Tests**: 78 ✅ (including new security tests)
 - **Test Classes**: 8+ (including security test classes)
 - **Coverage**: 100% of critical functionality and security measures
 - **Execution Time**: ~5-7 seconds

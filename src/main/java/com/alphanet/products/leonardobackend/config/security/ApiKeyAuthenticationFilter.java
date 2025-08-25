@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * This filter validates the X-API-Key header for incoming requests.
  * If the API key is valid, it sets the authentication in the security context.
- * Implements rate limiting for failed authentication attempts to prevent log flooding attacks.
+ * Implements configurable rate limiting for failed authentication attempts to prevent log flooding attacks.
  */
 @Slf4j
 public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
@@ -29,10 +30,15 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private static final String API_KEY_HEADER = "X-API-Key";
     private static final String AUTHENTICATED_USER = "leonardo-gpt-agent";
     
-    // Rate limiting configuration
-    private static final int MAX_FAILED_ATTEMPTS_PER_IP = 5;
-    private static final long RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
-    private static final long LOG_SUPPRESSION_WINDOW_MS = 300000; // 5 minutes
+    // Configurable rate limiting parameters - must be defined in application.properties
+    @Value("${api.security.rate-limit.max-attempts}")
+    private int maxFailedAttemptsPerIp;
+    
+    @Value("${api.security.rate-limit.window-ms}")
+    private long rateLimitWindowMs;
+    
+    @Value("${api.security.rate-limit.log-suppression-ms}")
+    private long logSuppressionWindowMs;
     
     private final String apiKey;
     
@@ -45,6 +51,20 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         }
         this.apiKey = apiKey;
         log.debug("ApiKeyAuthenticationFilter initialized with API key of length: {}", apiKey.length());
+    }
+
+    /**
+     * Constructor for testing purposes with hardcoded rate limiting values
+     */
+    public ApiKeyAuthenticationFilter(String apiKey, int maxFailedAttemptsPerIp, long rateLimitWindowMs, long logSuppressionWindowMs) {
+        if (!StringUtils.hasText(apiKey)) {
+            throw new IllegalArgumentException("API key cannot be null or empty");
+        }
+        this.apiKey = apiKey;
+        this.maxFailedAttemptsPerIp = maxFailedAttemptsPerIp;
+        this.rateLimitWindowMs = rateLimitWindowMs;
+        this.logSuppressionWindowMs = logSuppressionWindowMs;
+        log.debug("ApiKeyAuthenticationFilter initialized for testing with API key of length: {} and custom rate limiting", apiKey.length());
     }
 
     @Override
@@ -108,9 +128,9 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         }
         
         // Check if we're within the rate limit window
-        if (currentTime - rateLimitInfo.firstAttemptTime < RATE_LIMIT_WINDOW_MS) {
+        if (currentTime - rateLimitInfo.firstAttemptTime < rateLimitWindowMs) {
             // Within rate limit window - only log if we haven't logged recently
-            return currentTime - rateLimitInfo.lastLogTime > LOG_SUPPRESSION_WINDOW_MS;
+            return currentTime - rateLimitInfo.lastLogTime > logSuppressionWindowMs;
         } else {
             // Outside rate limit window - reset and log
             rateLimitInfo.reset(currentTime);
