@@ -11,6 +11,9 @@ EC2_USER="ec2-user"
 KEY_FILE=""  # To be filled with path to SSH key file
 APP_NAME="leonardo-backend"
 
+# API Key for testing endpoints (required for security)
+API_KEY="${API_KEY:-}"  # Can be set via environment variable
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -18,12 +21,30 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}🚀 Starting deployment to AWS EC2...${NC}"
+echo ""
+echo -e "${YELLOW}📋 IMPORTANT: API Key Required for Testing${NC}"
+echo -e "${YELLOW}To test endpoints after deployment, you need to set an API key:${NC}"
+echo -e "${YELLOW}1. Generate API key: ./scripts/generate-api-key.sh${NC}"
+echo -e "${YELLOW}2. Set environment variable: export API_KEY='your_api_key_here'${NC}"
+echo -e "${YELLOW}3. Or modify this script to set API_KEY directly${NC}"
+echo ""
 
 # Check if required variables are set
 if [ -z "$EC2_HOST" ] || [ -z "$KEY_FILE" ]; then
     echo -e "${RED}❌ Error: Please set EC2_HOST and KEY_FILE variables in this script${NC}"
     exit 1
 fi
+
+# Check if API key is set for testing
+if [ -z "$API_KEY" ]; then
+    echo -e "${YELLOW}⚠️  Warning: API_KEY not set. Endpoint testing will be skipped.${NC}"
+    echo -e "${YELLOW}   Set API_KEY to test endpoints after deployment.${NC}"
+    SKIP_TESTING=true
+else
+    echo -e "${GREEN}✅ API_KEY is set. Endpoint testing will be performed.${NC}"
+    SKIP_TESTING=false
+fi
+echo ""
 
 # Check if SSH key file exists
 if [ ! -f "$KEY_FILE" ]; then
@@ -111,16 +132,26 @@ ssh -i "$KEY_FILE" "$EC2_USER@$EC2_HOST" "
 
 # Step 9: Test application endpoints
 echo -e "${YELLOW}🧪 Testing application endpoints...${NC}"
-if curl -f -s "http://$EC2_HOST:8080/actuator/health" > /dev/null; then
-    echo -e "${GREEN}✅ Health check passed${NC}"
-else
-    echo -e "${RED}❌ Health check failed${NC}"
-fi
 
-if curl -f -s "http://$EC2_HOST:8080/api/v1/metrics/scalar" > /dev/null; then
-    echo -e "${GREEN}✅ API endpoints accessible${NC}"
+if [ "$SKIP_TESTING" = true ]; then
+    echo -e "${YELLOW}⚠️  Skipping endpoint testing (API_KEY not set)${NC}"
+    echo -e "${YELLOW}   Set API_KEY to test endpoints manually:${NC}"
+    echo -e "${YELLOW}   curl -H 'X-API-Key: your_api_key' http://$EC2_HOST:8080/actuator/health${NC}"
 else
-    echo -e "${YELLOW}⚠️  API endpoints may not be ready yet${NC}"
+    echo -e "${GREEN}🔑 Testing with API key...${NC}"
+    
+    if curl -f -s "http://$EC2_HOST:8080/actuator/health" > /dev/null; then
+        echo -e "${GREEN}✅ Health check passed${NC}"
+    else
+        echo -e "${RED}❌ Health check failed${NC}"
+    fi
+
+    if curl -f -s -H "X-API-Key: $API_KEY" "http://$EC2_HOST:8080/api/v1/metrics/scalar" > /dev/null; then
+        echo -e "${GREEN}✅ API endpoints accessible with authentication${NC}"
+    else
+        echo -e "${RED}❌ API endpoints authentication failed${NC}"
+        echo -e "${YELLOW}   Check if API key is correct and application is running${NC}"
+    fi
 fi
 
 echo -e "${GREEN}🎉 Deployment completed!${NC}"
