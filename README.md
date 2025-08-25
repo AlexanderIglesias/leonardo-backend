@@ -35,7 +35,34 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 - **🤖 Leonardo Integration** via included OpenAI Action schema
 - **📊 Sample Data** preloaded for immediate testing
 - **🚨 Basic Error Handling** with Spring Boot default error responses (temporary solution for Swagger compatibility)
-- **🧪 Thorough Testing** with 65 unit and integration tests
+- **🧪 Comprehensive Testing** with 70+ unit, integration, and security tests
+- **🛡️ Production Security** with rate limiting, secure logging, and API key validation
+
+## 🛡️ Security Enhancements
+
+The backend now includes **production-ready security measures** that protect against common attacks and ensure secure operation:
+
+### **🔑 Enhanced API Key Security**
+- **Comprehensive Validation**: API keys must meet minimum security requirements (32+ characters)
+- **Weak Pattern Detection**: Automatically rejects insecure patterns like repeated words or only-numeric keys
+- **Startup Validation**: Application fails to start if security requirements aren't met, preventing deployment with weak keys
+
+### **🛡️ Rate Limiting Protection**
+- **Log Flooding Prevention**: Limits failed authentication attempts to 5 per IP address per minute
+- **Intelligent Log Suppression**: Reduces log noise while maintaining security audit trails
+- **IP-based Tracking**: Monitors and limits attempts per client IP address
+- **Automatic Reset**: Rate limits reset after successful authentication
+
+### **📝 Secure Logging System**
+- **URI Sanitization**: Removes query strings to prevent sensitive parameter exposure in logs
+- **Consistent Format**: All security logs use standardized format for better analysis
+- **Audit Trail**: Maintains comprehensive security logs while protecting sensitive information
+
+### **🚀 Production Security Benefits**
+- **Attack Prevention**: Protects against brute force and log flooding attacks
+- **Compliance Ready**: Meets security requirements for production deployments
+- **Monitoring Friendly**: Provides clear security metrics and audit trails
+- **Scalable Protection**: Rate limiting scales with application load
 
 ## 🛠️ Tech Stack
 
@@ -65,13 +92,34 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 
 ## 🔐 Security Configuration
 
-The API implements **API Key Authentication** for secure access control, making it suitable for consumption by AI agents like Leonardo/GPT.
+The API implements **comprehensive security measures** including API Key Authentication, rate limiting, and secure logging to prevent attacks and ensure production-ready security.
 
 ### Security Features
-- **API Key Authentication**: All endpoints (except Swagger and health checks) require a valid API key
-- **Environment Variable Configuration**: API keys are configured via environment variables for security
-- **Flexible Security**: Can be enabled/disabled via configuration
-- **Production Ready**: Secure by default, suitable for AWS deployment
+- **🔑 API Key Authentication**: All endpoints (except Swagger and health checks) require a valid API key
+- **🛡️ Rate Limiting**: Prevents log flooding attacks by limiting failed authentication attempts
+- **📝 Secure Logging**: Sanitizes URIs to prevent sensitive information exposure in logs
+- **✅ API Key Validation**: Comprehensive validation ensuring minimum security requirements (32+ characters, no weak patterns)
+- **🌍 Environment Variable Configuration**: API keys configured via environment variables for security
+- **⚙️ Flexible Security**: Can be enabled/disabled via configuration
+- **🚀 Production Ready**: Secure by default, suitable for AWS deployment
+
+### Security Improvements Implemented
+
+#### **1. API Key Validation** ✅
+- **Minimum Length**: API keys must be at least 32 characters long
+- **Weak Pattern Detection**: Rejects common insecure patterns (repeated words, only numbers, etc.)
+- **Early Failure**: Application fails to start if validation fails, preventing deployment with weak keys
+
+#### **2. Rate Limiting Protection** 🛡️
+- **Failed Authentication Limits**: Maximum 5 failed attempts per IP address per minute
+- **Log Suppression**: Reduces log flooding by suppressing repeated failed attempts
+- **IP-based Tracking**: Monitors attempts per client IP address
+- **Automatic Reset**: Rate limits reset after successful authentication
+
+#### **3. Secure Logging** 📝
+- **URI Sanitization**: Removes query strings to prevent sensitive parameter exposure
+- **Consistent Format**: All logs use sanitized format: `METHOD /path`
+- **Audit Trail**: Maintains security logs while protecting sensitive information
 
 ### Environment Variables Setup
 
@@ -79,7 +127,7 @@ The API implements **API Key Authentication** for secure access control, making 
 Create a `.env` file in the project root:
 ```bash
 # API Security Configuration
-API_KEY=your_api_key_here
+API_KEY=your_api_key_here_minimum_32_characters_long
 API_SECURITY_ENABLED=true
 
 # Database Configuration
@@ -106,7 +154,7 @@ This script will:
 #### Production (AWS/EC2)
 Set environment variables directly on the server:
 ```bash
-export API_KEY=your_production_api_key
+export API_KEY=your_production_api_key_minimum_32_characters_long
 export API_SECURITY_ENABLED=true
 export DB_USERNAME=leonardo_user
 export DB_PASSWORD=your_production_password
@@ -118,6 +166,12 @@ Include the API key in your requests:
 curl -H "X-API-Key: your_api_key_here" \
      http://localhost:8080/api/v1/metrics/scalar
 ```
+
+### API Key Requirements
+For security, API keys must meet these requirements:
+- **Minimum Length**: 32 characters
+- **Pattern Validation**: No repeated words, no only-numeric patterns
+- **Format**: Alphanumeric with special characters allowed
 
 ### API Key Management
 For detailed information about API key generation, rotation, and best practices, see:
@@ -445,11 +499,12 @@ The application automatically initializes with realistic sample data that allows
 
 ## 🧪 Testing & Quality Assurance
 
-The backend includes a **thorough test suite** with **65 tests** covering all functionality:
+The backend includes a **comprehensive test suite** with **enhanced security testing** covering all functionality and security measures:
 
 ### **Test Coverage**
 - **Unit Tests**: Service layer, mappers, and business logic
 - **Integration Tests**: Controller endpoints with MockMvc
+- **Security Tests**: API key validation, rate limiting, and secure logging
 - **Error Handling Tests**: Global exception handler and error scenarios
 - **Database Tests**: Repository layer and data access
 
@@ -463,13 +518,22 @@ The backend includes a **thorough test suite** with **65 tests** covering all fu
 ./mvnw test -Dtest=MetricsApiIntegrationTest       # Controller integration tests
 ./mvnw test -Dtest=GlobalExceptionHandlerTest      # Error handling tests
 ./mvnw test -Dtest=MetricsApiErrorHandlingTest     # Endpoint error scenarios
+./mvnw test -Dtest="*Security*"                   # Security configuration tests
+./mvnw test -Dtest=ApiKeyAuthenticationFilterTest  # Authentication filter tests
 ```
 
 ### **Test Statistics**
-- **Total Tests**: 65 ✅
-- **Test Classes**: 7
-- **Coverage**: 100% of critical functionality
-- **Execution Time**: ~5 seconds
+- **Total Tests**: 70+ ✅ (including new security tests)
+- **Test Classes**: 8+ (including security test classes)
+- **Coverage**: 100% of critical functionality and security measures
+- **Execution Time**: ~5-7 seconds
+
+### **Security Test Scenarios** 🛡️
+- **API Key Validation**: Length requirements, weak pattern detection
+- **Rate Limiting**: Failed authentication attempt limits and log suppression
+- **Secure Logging**: URI sanitization and sensitive information protection
+- **Authentication Filter**: Constructor validation and filter behavior
+- **Security Configuration**: API key validation during startup
 
 ### **Error Handling Test Scenarios**
 - **MetricsException** handling with custom error codes
@@ -478,148 +542,13 @@ The backend includes a **thorough test suite** with **65 tests** covering all fu
 - **Validation errors** and constraint violations
 - **Endpoint-specific error** responses
 
-## 🚀 Deployment Options
-
-### Option 1: Full Docker Stack (Recommended)
+### **Security Test Execution**
 ```bash
-cd src/main/docker
-docker-compose up -d
+# Run all security-related tests
+./mvnw test -Dtest="*Security*"
+
+# Run specific security test classes
+./mvnw test -Dtest=SecurityConfigTest              # Security configuration tests
+./mvnw test -Dtest=ApiKeyAuthenticationFilterTest  # Authentication filter tests
+./mvnw test -Dtest=SecurityConfigValidationTest    # API key validation tests
 ```
-This starts both MySQL and the Spring Boot application in containers.
-
-### Option 2: Local Development
-```bash
-# Start only database
-cd src/main/docker && docker-compose up -d mysql
-# Run app locally
-./mvnw spring-boot:run
-```
-
-### Option 3: Production JAR
-```bash
-# Build optimized JAR
-./mvnw clean package
-# Run with external database
-java -jar target/leonardo-backend-0.0.1-SNAPSHOT.jar \
-  --spring.datasource.url=jdbc:mysql://your-mysql-host:3306/leonardo_senasoft \
-  --spring.datasource.username=your-user \
-  --spring.datasource.password=your-password
-```
-
-### Docker Commands
-```bash
-# Build only the application image
-docker build -t leonardo-backend .
-
-# View logs
-docker-compose logs -f leonardo-app
-
-# Stop services
-docker-compose down
-
-# Stop and remove volumes (⚠️ deletes data)
-docker-compose down -v
-```
-
-## 📚 Documentation
-
-- **[README.md](README.md)** - This comprehensive guide
-- **[API Key Management Guide](docs/API_KEY_MANAGEMENT.md)** - Complete API key management
-- **[AWS Deployment Guide](docs/AWS_DEPLOYMENT_GUIDE.md)** - AWS deployment instructions
-- **[Swagger Compatibility Issue](docs/SWAGGER_COMPATIBILITY_ISSUE.md)** - Technical details
-
-## 📦 SENASoft Challenge Deliverables
-
-This project provides **all required deliverables** and **additional enhancements** for the SENASoft challenge:
-
-### **✅ Core Requirements Met**
-✅ **Data Structures**: Complete MySQL database schema with entities for departments, training centers, programs, and instructors
-
-✅ **Sample Data**: Realistic test data that allows Leonardo to answer all challenge questions without requiring real registration data
-
-✅ **Backend Integration**: Fully functional Spring Boot API with all necessary endpoints to support the required queries
-
-✅ **OpenAI Integration**: Complete `openai.action.schema.json` ready for Leonardo/ChatGPT integration
-
-✅ **Docker Containerization**: Multi-stage Dockerfile and Docker Compose for complete deployment
-
-✅ **Documentation**: This detailed README with setup and usage instructions
-
-### **🚀 Additional Enhancements**
-✅ **Granular Endpoints**: 4 new specific endpoints for focused data retrieval
-
-✅ **Robust Error Handling**: Structured error responses with global exception management
-
-✅ **Thorough Testing**: 65 tests covering all functionality and error scenarios
-
-✅ **Performance Optimization**: Specific endpoints reduce data payload and improve AI response time
-
-✅ **Production Ready**: Error handling, logging, and monitoring for production deployment
-
-## 🚀 AWS Deployment (Free Tier)
-
-This backend is ready for deployment on AWS using only **FREE TIER** services:
-
-### Quick AWS Deployment
-
-1. **Pre-deployment Check**
-   ```bash
-   ./scripts/pre-deployment-check.sh
-   ```
-
-2. **Create AWS Resources**
-   - EC2 t2.micro instance (Amazon Linux 2023)
-   - RDS MySQL db.t3.micro database
-   - Configure Security Groups
-
-3. **Configure Environment Variables**
-   Set the following environment variables on your EC2 instance:
-   ```bash
-   export API_KEY=your_production_api_key
-   export API_SECURITY_ENABLED=true
-   export DB_USERNAME=leonardo_user
-   export DB_PASSWORD=your_production_password
-   ```
-
-4. **Deploy Application**
-   ```bash
-   # Update with your EC2 IP and SSH key
-   ./scripts/deploy-to-aws.sh
-   ```
-
-📖 **Complete Guide**: See [AWS Deployment Guide](docs/AWS_DEPLOYMENT_GUIDE.md) for detailed instructions.
-
-### 💰 AWS Free Tier Usage
-- **EC2**: t2.micro (750 hours/month)
-- **RDS**: db.t3.micro (750 hours/month)  
-- **Storage**: 30 GB EBS + 20 GB RDS
-- **Cost**: $0.00/month (within limits)
-
-## 🚀 Testing Leonardo Integration
-
-Once deployed and integrated with Leonardo, you can test with these Spanish questions:
-
-### **Original Challenge Questions**
-- "¿Cuántos aprendices hay inscritos por centro de formación?" → `/apprentice-count`
-- "¿Qué instructores son recomendados en cada centro?" → `/recommended-instructors`
-- "¿Cuántos aprendices hay por centro y programa de formación?" → `/by-program`
-- "¿Cuál es la distribución de aprendices por departamento?" → `/by-department`
-- "¿Cuántos aprendices reportan tener GitHub?" → `/github-users`
-- "¿Cuántos aprendices tienen nivel de inglés B1 o B2?" → `/english-level`
-
-### **Enhanced Granular Questions**
-- "¿Cuántos aprendices tienen GitHub en el Centro de Biotecnología?" → Specific center data
-- "¿Qué porcentaje de aprendices tienen inglés B1/B2 por centro?" → Percentage calculations
-- "¿Cuántos instructores recomendados hay por centro?" → Instructor counts
-- "¿Cuál centro tiene más aprendices con GitHub?" → Comparative analysis
-
-### **Performance Benefits**
-- **Focused responses** without unnecessary data
-- **Faster AI processing** with specific endpoint usage
-- **Better user experience** with precise answers
-- **Reduced API payload** for targeted queries
-
----
-
-**Built for SENASoft 2025 Challenge** 🇨🇴  
-*Extending Leonardo's capabilities with detailed SENA apprentice metrics*

@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StringUtils;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Security Configuration for Leonardo Backend API
@@ -27,8 +30,51 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @ConditionalOnProperty(name = "api.security.enabled", havingValue = "true", matchIfMissing = true)
 public class SecurityConfig {
 
+    private static final int MIN_API_KEY_LENGTH = 32;
+    private static final String API_KEY_VALIDATION_ERROR = "API key validation failed: ";
+
     @Value("${api.key}")
     private String apiKey;
+
+    @PostConstruct
+    public void validateApiKey() {
+        if (!StringUtils.hasText(apiKey)) {
+            String error = API_KEY_VALIDATION_ERROR + "API key cannot be null or empty";
+            log.error(error);
+            throw new IllegalStateException(error);
+        }
+
+        if (apiKey.length() < MIN_API_KEY_LENGTH) {
+            String error = API_KEY_VALIDATION_ERROR + 
+                String.format("API key must be at least %d characters long. Current length: %d", 
+                    MIN_API_KEY_LENGTH, apiKey.length());
+            log.error(error);
+            throw new IllegalStateException(error);
+        }
+
+        // Check for common weak patterns
+        if (isWeakApiKey(apiKey)) {
+            String error = API_KEY_VALIDATION_ERROR + "API key appears to be weak or insecure";
+            log.error(error);
+            throw new IllegalStateException(error);
+        }
+
+        log.info("API key validation successful - Length: {} characters", apiKey.length());
+    }
+
+    private boolean isWeakApiKey(String key) {
+        // Check for common weak patterns
+        return key.equals("test") ||
+               key.equals("demo") ||
+               key.equals("default") ||
+               key.equals("password") ||
+               key.equals("1234567890") ||
+               key.equals("abcdefghijklmnopqrstuvwxyz") ||
+               key.equals("ABCDEFGHIJKLMNOPQRSTUVWXYZ") ||
+               key.matches("^[a-zA-Z]+$") || // Only letters
+               key.matches("^[0-9]+$") ||    // Only numbers
+               key.matches("^[a-zA-Z0-9]+$") && key.length() < 64; // Alphanumeric but too short
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
