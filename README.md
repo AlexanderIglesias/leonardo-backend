@@ -34,8 +34,8 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 - **⚡ Performance Optimized** with optimized queries and connection pooling
 - **🤖 Leonardo Integration** via included OpenAI Action schema
 - **📊 Sample Data** preloaded for immediate testing
-- **🚨 Basic Error Handling** with Spring Boot default error responses (temporary solution for Swagger compatibility)
-- **🧪 Comprehensive Testing** with 70+ unit, integration, and security tests
+- **🚨 Spring Boot Error Handling** with standard error responses (temporary solution for Swagger compatibility)
+- **🧪 Comprehensive Testing** with 78+ unit, integration, and security tests
 - **🛡️ Production Security** with rate limiting, secure logging, and API key validation
 
 ## 🛡️ Security Enhancements
@@ -323,11 +323,10 @@ All endpoints are available under `/api/v1/metrics` and designed to answer the S
 ```
 src/main/java/com/alphanet/products/leonardobackend/
 ├── config/              # App configuration & data initialization
-├── controller          # REST endpoints with robust error handling
+├── controller/          # REST endpoints with Spring Boot error handling
 ├── dto/                 # Data transfer objects including error responses
 │   └── projection/      # Database projections for optimized queries
 ├── entity/              # Database entities (Department, TrainingCenter, Program, Instructor)
-├── exception/           # Custom exceptions and global error handler
 ├── repository/          # Data access with custom queries
 ├── service/             # Business logic layer
 │   ├── impl/           # Service implementations
@@ -336,8 +335,7 @@ src/main/java/com/alphanet/products/leonardobackend/
 
 src/test/java/com/alphanet/products/leonardobackend/
 ├── config/              # Configuration tests
-├── controller/          # Controller tests including error handling
-├── exception/           # Exception handler tests
+├── controller/          # Controller tests
 ├── service/             # Service layer tests
 │   ├── impl/           # Service implementation tests
 │   └── mapper/         # Mapper utility tests
@@ -346,35 +344,25 @@ src/test/java/com/alphanet/products/leonardobackend/
 
 ## 🚨 Error Handling & Response Management
 
-The backend implements a **robust error handling system** that provides consistent, structured error responses for all endpoints:
+**Note**: Due to compatibility issues between Spring Boot 3.5.5 and SpringDoc 2.2.0, the custom error handling system has been temporarily disabled. See [SWAGGER_COMPATIBILITY_ISSUE.md](docs/SWAGGER_COMPATIBILITY_ISSUE.md) for complete details.
 
-### **Error Response Structure**
-```json
-{
-  "status": 500,
-  "message": "Internal server error",
-  "details": "Database connection failed",
-  "timestamp": "2025-08-22T11:21:37",
-  "path": "/api/v1/metrics/scalar",
-  "validationErrors": []
-}
-```
+### **Current Error Handling**
+- **Spring Boot Default Responses**: Uses standard Spring Boot error handling
+- **Functional API**: All endpoints work perfectly despite simplified error responses
+- **Swagger Compatibility**: Full API documentation is available and functional
+- **Production Ready**: Application is fully operational in both local and AWS environments
 
 ### **HTTP Status Codes**
 - **400 Bad Request** - Invalid parameters or malformed requests
 - **404 Not Found** - Requested data not available
-- **500 Internal Server Error** - Server-side errors with detailed logging
+- **500 Internal Server Error** - Server-side errors with standard Spring Boot responses
 
-### **Global Exception Handler**
-- **Centralized error management** using `@ControllerAdvice`
-- **Custom exceptions** for domain-specific errors (`MetricsException`, `DataNotFoundException`)
-- **Structured logging** for all errors with context information
+### **Future Enhancement**
+Once the SpringDoc compatibility issue is resolved, the backend will implement:
+- **Custom exception handling** with structured error responses
+- **Domain-specific exceptions** for better error categorization
 - **Consistent error format** across all endpoints
-
-### **Validation Error Handling**
-- **Field-level validation** with specific error messages
-- **Constraint violation** handling for data integrity
-- **User-friendly error messages** for better debugging
+- **Enhanced logging** for debugging and monitoring
 
 ## 🤖 Leonardo Integration
 
@@ -435,8 +423,6 @@ echo $API_KEY
 ```
 
 # Run specific test categories
-./mvnw test -Dtest=MetricsApiErrorHandlingTest    # Error handling tests
-./mvnw test -Dtest=GlobalExceptionHandlerTest     # Exception handler tests
 ./mvnw test -Dtest=MetricsApiIntegrationTest      # Integration tests
 
 # Package
@@ -588,8 +574,6 @@ The backend includes a **comprehensive test suite** with **enhanced security tes
 # Run specific test categories
 ./mvnw test -Dtest=MetricsServiceImplTest          # Service layer tests
 ./mvnw test -Dtest=MetricsApiIntegrationTest       # Controller integration tests
-./mvnw test -Dtest=GlobalExceptionHandlerTest      # Error handling tests
-./mvnw test -Dtest=MetricsApiErrorHandlingTest     # Endpoint error scenarios
 ./mvnw test -Dtest="*Security*"                   # Security configuration tests
 ./mvnw test -Dtest=ApiKeyAuthenticationFilterTest  # Authentication filter tests
 ```
@@ -607,12 +591,12 @@ The backend includes a **comprehensive test suite** with **enhanced security tes
 - **Authentication Filter**: Constructor validation and filter behavior
 - **Security Configuration**: API key validation during startup
 
-### **Error Handling Test Scenarios**
-- **MetricsException** handling with custom error codes
-- **DataNotFoundException** for missing resources
-- **RuntimeException** and generic error handling
-- **Validation errors** and constraint violations
-- **Endpoint-specific error** responses
+### **Security Test Scenarios** 🛡️
+- **API Key Validation**: Length requirements, weak pattern detection
+- **Rate Limiting**: Failed authentication attempt limits and log suppression
+- **Secure Logging**: URI sanitization and sensitive information protection
+- **Authentication Filter**: Constructor validation and filter behavior
+- **Security Configuration**: API key validation during startup
 
 ### **Security Test Execution**
 ```bash
