@@ -3,10 +3,10 @@ services:
     image: mysql:8.0
     container_name: leonardo-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-SenaSoft2024@Leonardo!}
+      MYSQL_ROOT_PASSWORD: $${MYSQL_ROOT_PASSWORD:"SenaSoft2024@Leonardo"}
       MYSQL_DATABASE: leonardo_senasoft
-      MYSQL_USER: ${DB_USERNAME:-leonardo_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-L30n4rd0_S3n4S0ft_2024!}
+      MYSQL_USER: $${DB_USERNAME:leonardo_user}
+      MYSQL_PASSWORD: $${DB_PASSWORD:"L30n4rd0_S3n4S0ft_2024"}
     ports:
       - "3306:3306"
     volumes:
@@ -28,8 +28,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/leonardo_senasoft?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true
-      DB_USERNAME: ${DB_USERNAME:-leonardo_user}
-      DB_PASSWORD: ${DB_PASSWORD:-L30n4rd0_S3n4S0ft_2024!}
+      DB_USERNAME: $${DB_USERNAME:leonardo_user}
+      DB_PASSWORD: $${DB_PASSWORD:"L30n4rd0_S3n4S0ft_2024"}
     ports:
       - "8080:8080"
     depends_on:

@@ -27,6 +27,7 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 
 - **🏗️ Well-Structured Code** with proper separation of concerns
 - **🔒 Type-Safe Database Projections** to avoid runtime errors
+- **🔐 API Key Authentication** for secure access control
 - **📝 API Versioning** for future compatibility (`/api/v1/`)
 - **📚 Interactive Documentation** with Swagger UI
 - **🐳 Full Docker Support** with multi-stage builds and complete containerization
@@ -61,6 +62,69 @@ Complete REST API backend that provides detailed metrics and analytics for SENA 
 - See [SWAGGER_COMPATIBILITY_ISSUE.md](docs/SWAGGER_COMPATIBILITY_ISSUE.md) for complete details
 - This is a temporary solution that maintains full functionality
 - The application is production-ready despite this limitation
+
+## 🔐 Security Configuration
+
+The API implements **API Key Authentication** for secure access control, making it suitable for consumption by AI agents like Leonardo/GPT.
+
+### Security Features
+- **API Key Authentication**: All endpoints (except Swagger and health checks) require a valid API key
+- **Environment Variable Configuration**: API keys are configured via environment variables for security
+- **Flexible Security**: Can be enabled/disabled via configuration
+- **Production Ready**: Secure by default, suitable for AWS deployment
+
+### Environment Variables Setup
+
+#### Local Development
+Create a `.env` file in the project root:
+```bash
+# API Security Configuration
+API_KEY=your_api_key_here
+API_SECURITY_ENABLED=true
+
+# Database Configuration
+DB_USERNAME=leonardo_user
+DB_PASSWORD=your_password_here
+MYSQL_ROOT_PASSWORD=your_root_password
+```
+
+**Option 1: Load manually**
+```bash
+source .env
+```
+
+**Option 2: Use the setup script (Recommended)**
+```bash
+./scripts/setup-local-env.sh
+```
+This script will:
+- Load all variables from your `.env` file
+- Set default values if `.env` is missing
+- Show you what variables are configured
+- Provide helpful verification commands
+
+#### Production (AWS/EC2)
+Set environment variables directly on the server:
+```bash
+export API_KEY=your_production_api_key
+export API_SECURITY_ENABLED=true
+export DB_USERNAME=leonardo_user
+export DB_PASSWORD=your_production_password
+```
+
+### API Key Usage
+Include the API key in your requests:
+```bash
+curl -H "X-API-Key: your_api_key_here" \
+     http://localhost:8080/api/v1/metrics/scalar
+```
+
+### API Key Management
+For detailed information about API key generation, rotation, and best practices, see:
+- **[API Key Management Guide](docs/API_KEY_MANAGEMENT.md)** - Complete guide for managing API keys
+- **Key Generation**: Use the included script `./scripts/generate-api-key.sh`
+- **Key Rotation**: Recommended every 90 days for production
+- **Security**: Never commit API keys to Git, use environment variables
 
 ## Getting Started
 
@@ -252,6 +316,27 @@ This provides **better performance** and **more focused responses** for Leonardo
 
 # Run tests (all 65 tests)
 ./mvnw test
+```
+
+### Environment Setup
+
+```bash
+# Setup environment variables (recommended)
+./scripts/setup-local-env.sh
+
+# Or load manually
+source .env
+```
+
+### API Key Management
+
+```bash
+# Generate new API key
+./scripts/generate-api-key.sh
+
+# View current API key (if set)
+echo $API_KEY
+```
 
 # Run specific test categories
 ./mvnw test -Dtest=MetricsApiErrorHandlingTest    # Error handling tests
@@ -278,6 +363,17 @@ The application uses a multi-container setup with Docker Compose:
 - Health checks for both services with proper dependency management
 - MySQL health check ensures database is ready before starting the app
 
+#### Environment Variables in Docker
+The `docker-compose.yml` uses environment variables for configuration:
+```yaml
+environment:
+  MYSQL_ROOT_PASSWORD: $${MYSQL_ROOT_PASSWORD:"SenaSoft2024@Leonardo"}
+  MYSQL_USER: $${DB_USERNAME:leonardo_user}
+  MYSQL_PASSWORD: $${DB_PASSWORD:"L30n4rd0_S3n4S0ft_2024"}
+```
+
+**Note**: Variables are escaped with `$$` for Docker Compose compatibility.
+
 #### Database Configuration
 - Database: `leonardo_senasoft`
 - User: `leonardo_user`
@@ -302,6 +398,16 @@ spring.profiles.active=dev
 # Database URL provided via environment variables
 # Optimized connection pool settings for containers
 spring.profiles.active=docker
+```
+
+#### AWS Profile (`application-aws.properties`)
+```properties
+# AWS production deployment
+# Uses environment variables for all configuration
+api.security.enabled=${API_SECURITY_ENABLED:true}
+api.key=${API_KEY}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 ```
 
 ## Monitoring
@@ -415,6 +521,13 @@ docker-compose down
 docker-compose down -v
 ```
 
+## 📚 Documentation
+
+- **[README.md](README.md)** - This comprehensive guide
+- **[API Key Management Guide](docs/API_KEY_MANAGEMENT.md)** - Complete API key management
+- **[AWS Deployment Guide](docs/AWS_DEPLOYMENT_GUIDE.md)** - AWS deployment instructions
+- **[Swagger Compatibility Issue](docs/SWAGGER_COMPATIBILITY_ISSUE.md)** - Technical details
+
 ## 📦 SENASoft Challenge Deliverables
 
 This project provides **all required deliverables** and **additional enhancements** for the SENASoft challenge:
@@ -459,7 +572,16 @@ This backend is ready for deployment on AWS using only **FREE TIER** services:
    - RDS MySQL db.t3.micro database
    - Configure Security Groups
 
-3. **Deploy Application**
+3. **Configure Environment Variables**
+   Set the following environment variables on your EC2 instance:
+   ```bash
+   export API_KEY=your_production_api_key
+   export API_SECURITY_ENABLED=true
+   export DB_USERNAME=leonardo_user
+   export DB_PASSWORD=your_production_password
+   ```
+
+4. **Deploy Application**
    ```bash
    # Update with your EC2 IP and SSH key
    ./scripts/deploy-to-aws.sh
