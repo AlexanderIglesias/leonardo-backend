@@ -35,6 +35,41 @@ sudo mkdir -p /opt/leonardo/logs
 sudo mkdir -p /opt/leonardo/config
 sudo chown -R leonardo:leonardo /opt/leonardo
 
+# Configure environment variables
+echo "🔐 Configuring environment variables..."
+sudo tee /etc/environment.d/leonardo-backend.conf > /dev/null <<EOF
+# Leonardo Backend Environment Variables
+# IMPORTANT: Update these values with your actual configuration
+
+# API Security Configuration
+API_KEY=REPLACE_WITH_YOUR_API_KEY
+API_SECURITY_ENABLED=true
+
+# Database Configuration
+DB_URL=jdbc:mysql://YOUR_RDS_ENDPOINT.region.rds.amazonaws.com:3306/leonardo_senasoft?useSSL=true&requireSSL=true&serverTimezone=UTC
+DB_USERNAME=leonardo_user
+DB_PASSWORD=REPLACE_WITH_SECURE_PASSWORD
+
+# Application Configuration
+SPRING_PROFILES_ACTIVE=aws
+JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+EOF
+
+# Also add to leonardo user's profile
+sudo tee /home/leonardo/.bashrc >> /dev/null <<EOF
+
+# Leonardo Backend Environment Variables
+export API_KEY=REPLACE_WITH_YOUR_API_KEY
+export API_SECURITY_ENABLED=true
+export DB_URL=jdbc:mysql://YOUR_RDS_ENDPOINT.region.rds.amazonaws.com:3306/leonardo_senasoft?useSSL=true&requireSSL=true&serverTimezone=UTC
+export DB_USERNAME=leonardo_user
+export DB_PASSWORD=REPLACE_WITH_SECURE_PASSWORD
+export SPRING_PROFILES_ACTIVE=aws
+export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+EOF
+
+sudo chown leonardo:leonardo /home/leonardo/.bashrc
+
 
 
 # Install and configure systemd service
@@ -58,9 +93,12 @@ StandardError=journal
 SyslogIdentifier=leonardo-backend
 
 Environment=JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
-Environment=DB_URL=jdbc:mysql://YOUR_RDS_ENDPOINT.region.rds.amazonaws.com:3306/leonardo_senasoft?useSSL=true&requireSSL=true&serverTimezone=UTC
-Environment=DB_USERNAME=leonardo_user
-Environment=DB_PASSWORD=REPLACE_WITH_SECURE_PASSWORD
+Environment=API_KEY=\${API_KEY}
+Environment=API_SECURITY_ENABLED=\${API_SECURITY_ENABLED}
+Environment=DB_URL=\${DB_URL}
+Environment=DB_USERNAME=\${DB_USERNAME}
+Environment=DB_PASSWORD=\${DB_PASSWORD}
+Environment=SPRING_PROFILES_ACTIVE=\${SPRING_PROFILES_ACTIVE}
 
 [Install]
 WantedBy=multi-user.target
@@ -144,10 +182,19 @@ EOF
 echo "✅ AWS EC2 setup completed!"
 echo ""
 echo "📋 Next steps:"
-echo "1. Upload the leonardo-backend.jar file to /opt/leonardo/"
-echo "2. Update the database connection string in the systemd service"
-echo "3. Start the service with: sudo systemctl start leonardo-backend"
-echo "4. Check status with: sudo systemctl status leonardo-backend"
-echo "5. View logs with: journalctl -u leonardo-backend -f"
+echo "1. Update environment variables in /etc/environment.d/leonardo-backend.conf:"
+echo "   - Set your actual API_KEY"
+echo "   - Update DB_URL with your RDS endpoint"
+echo "   - Set your secure DB_PASSWORD"
+echo "2. Upload the leonardo-backend.jar file to /opt/leonardo/"
+echo "3. Reload environment variables: source /etc/environment.d/leonardo-backend.conf"
+echo "4. Start the service: sudo systemctl start leonardo-backend"
+echo "5. Check status: sudo systemctl status leonardo-backend"
+echo "6. View logs: journalctl -u leonardo-backend -f"
+echo ""
+echo "🔐 Security Notes:"
+echo "- API keys are stored in /etc/environment.d/ for system-wide access"
+echo "- Database passwords should be strong and unique"
+echo "- Consider using AWS Systems Manager Parameter Store for production secrets"
 echo ""
 echo "🔗 Application will be available at: http://your-ec2-public-ip:8080"
