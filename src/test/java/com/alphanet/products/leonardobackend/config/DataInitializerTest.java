@@ -1,7 +1,9 @@
 package com.alphanet.products.leonardobackend.config;
 
 import com.alphanet.products.leonardobackend.repository.DepartmentRepository;
+import com.alphanet.products.leonardobackend.repository.EquipmentRepository;
 import com.alphanet.products.leonardobackend.repository.InstructorRepository;
+import com.alphanet.products.leonardobackend.repository.KnowledgeRepository;
 import com.alphanet.products.leonardobackend.repository.ProgramRepository;
 import com.alphanet.products.leonardobackend.repository.TrainingCenterRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +33,18 @@ class DataInitializerTest {
     @Mock
     private InstructorRepository instructorRepository;
 
+    @Mock
+    private EquipmentRepository equipmentRepository;
+
+    @Mock
+    private KnowledgeRepository knowledgeRepository;
+
     @InjectMocks
     private DataInitializer dataInitializer;
 
     @BeforeEach
     void setUp() {
-        reset(departmentRepository, trainingCenterRepository, programRepository, instructorRepository);
+        reset(departmentRepository, trainingCenterRepository, programRepository, instructorRepository, equipmentRepository, knowledgeRepository);
     }
 
     @Test
@@ -48,6 +56,10 @@ class DataInitializerTest {
         when(trainingCenterRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(programRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(instructorRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(equipmentRepository.count()).thenReturn(0L);
+        when(equipmentRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(knowledgeRepository.count()).thenReturn(0L);
+        when(knowledgeRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
 
         // When
         dataInitializer.run();
@@ -58,6 +70,10 @@ class DataInitializerTest {
         verify(trainingCenterRepository).saveAll(any());
         verify(programRepository).saveAll(any());
         verify(instructorRepository).saveAll(any());
+        verify(equipmentRepository).count();
+        verify(equipmentRepository).saveAll(any());
+        verify(knowledgeRepository).count();
+        verify(knowledgeRepository).saveAll(any());
     }
 
     @Test
@@ -86,6 +102,10 @@ class DataInitializerTest {
         when(trainingCenterRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(programRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(instructorRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(equipmentRepository.count()).thenReturn(0L);
+        when(equipmentRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(knowledgeRepository.count()).thenReturn(0L);
+        when(knowledgeRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
 
         // When
         dataInitializer.run();
@@ -126,6 +146,10 @@ class DataInitializerTest {
         when(trainingCenterRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(programRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(instructorRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(equipmentRepository.count()).thenReturn(0L);
+        when(equipmentRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(knowledgeRepository.count()).thenReturn(0L);
+        when(knowledgeRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
 
         // When
         dataInitializer.run();
@@ -201,6 +225,10 @@ class DataInitializerTest {
         when(trainingCenterRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(programRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
         when(instructorRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(equipmentRepository.count()).thenReturn(0L);
+        when(equipmentRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
+        when(knowledgeRepository.count()).thenReturn(0L);
+        when(knowledgeRepository.saveAll(any())).thenReturn(mock(java.util.List.class));
 
         // When
         dataInitializer.run("arg1", "arg2", "arg3");
